@@ -13,6 +13,14 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "0.1"
+
+        buildConfigField("String", "MISTRAL_API_KEY", "\"${System.getenv("MISTRAL_API_KEY") ?: ""}\"")
+        buildConfigField("String", "FISH_API_KEY", "\"${System.getenv("FISH_API_KEY") ?: ""}\"")
+        buildConfigField("String", "FISH_VOICE_ID", "\"${System.getenv("FISH_VOICE_ID") ?: "612b878b113047d9a770c069c8b4fdfe"}\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
