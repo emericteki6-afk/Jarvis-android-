@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      MISTRAL_API_KEY: ${{ secrets.MISTRAL }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI }}
       FISH_API_KEY: ${{ secrets.FISHAUDIO }}
       FISH_VOICE_ID: ${{ secrets.FISHAUDIOID }}
     steps:
