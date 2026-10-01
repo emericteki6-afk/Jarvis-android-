@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         json.put("contents", contents)
 
         val body = json.toString().toRequestBody("application/json".toMediaType())
-        val url = "val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${BuildConfig.GEMINI_API_KEY}"}"
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${BuildConfig.GEMINI_API_KEY}"
         val request = Request.Builder()
             .url(url)
             .addHeader("Content-Type", "application/json")
