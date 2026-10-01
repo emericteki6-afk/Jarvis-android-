@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             val spokenText = results?.get(0)
             if (spokenText != null) {
                 statusText.text = "Toi: $spokenText"
-                askMistral(spokenText)
+                askGemini(spokenText)
             }
         }
     }
@@ -72,44 +72,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun askMistral(userText: String) {
+    private fun askGemini(userText: String) {
         statusText.text = "Jarvis réfléchit..."
 
         val json = JSONObject()
-        json.put("model", "mistral-small-latest")
-        val messages = JSONArray()
-        val msg = JSONObject()
-        msg.put("role", "user")
-        msg.put("content", userText)
-        messages.put(msg)
-        json.put("messages", messages)
+        val contents = JSONArray()
+        val content = JSONObject()
+        val parts = JSONArray()
+        val part = JSONObject()
+        part.put("text", userText)
+        parts.put(part)
+        content.put("parts", parts)
+        contents.put(content)
+        json.put("contents", contents)
 
         val body = json.toString().toRequestBody("application/json".toMediaType())
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${BuildConfig.GEMINI_API_KEY}"
         val request = Request.Builder()
-            .url("https://api.mistral.ai/v1/chat/completions")
-            .addHeader("Authorization", "Bearer ${BuildConfig.MISTRAL_API_KEY}")
+            .url(url)
             .addHeader("Content-Type", "application/json")
             .post(body)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread { statusText.text = "Erreur Mistral: ${e.message}" }
+                runOnUiThread { statusText.text = "Erreur Gemini: ${e.message}" }
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val respBody = response.body?.string()
                 if (!response.isSuccessful || respBody == null) {
-                    runOnUiThread { statusText.text = "Erreur Mistral (${response.code}): $respBody" }
+                    runOnUiThread { statusText.text = "Erreur Gemini (${response.code}): $respBody" }
                     return
                 }
                 try {
                     val resultJson = JSONObject(respBody)
                     val answer = resultJson
-                        .getJSONArray("choices")
+                        .getJSONArray("candidates")
                         .getJSONObject(0)
-                        .getJSONObject("message")
-                        .getString("content")
+                        .getJSONObject("content")
+                        .getJSONArray("parts")
+                        .getJSONObject(0)
+                        .getString("text")
 
                     runOnUiThread { statusText.text = "Jarvis: $answer" }
                     speakWithFishAudio(answer)
